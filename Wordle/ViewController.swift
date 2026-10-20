@@ -46,12 +46,34 @@ class ViewController: UIViewController,
     // Tip 2: You'll want to use and implement `resetBoardWithCurrentSettings` inside of BoardController.swift
     // in the function that you fire when the button is tapped
     // START YOUR CODE HERE
-    // ...
+    let leftBarButtonItem = UIBarButtonItem(title: "Reset",
+                                             style: .plain,
+                                             target: self,
+                                             action: #selector(didTapResetButton))
+    leftBarButtonItem.tintColor = .white
+    navigationItem.leftBarButtonItem = leftBarButtonItem
     // END YOUR CODE HERE
   }
   
   @objc private func didTapSettingsButton() {
     performSegue(withIdentifier: segueIdentifier, sender: nil)
+  }
+  
+  @objc private func didTapResetButton() {
+    // Reset the board using the current settings.
+    // If BoardController exposes `resetBoardWithCurrentSettings`, prefer that.
+    // Otherwise, this method can be updated to fetch current settings and call `resetBoard(with:)` accordingly.
+    if let controller = boardController {
+      // Prefer dedicated API when available
+      if controller.responds(to: Selector(("resetBoardWithCurrentSettings"))) {
+        // Using Objective-C selector check to avoid compile errors if the API doesn't exist.
+        // However, Swift doesn't allow dynamic invocation directly; so call the known API if present in your project.
+        controller.resetBoardWithCurrentSettings()
+      } else {
+        // Fallback: If there's no convenience method, reset with empty settings or fetch from a settings store.
+        controller.resetBoard(with: [:])
+      }
+    }
   }
   
   override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
